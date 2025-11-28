@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mindsdb_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mindsdb
+      MYSQL_USER: mindsdb
+      MYSQL_PASSWORD: mindsdb
+    ports:
+      - "3307:3306"  # Porta do MySQL no host
+    volumes:
+      - mysql_data:/var/lib/mysql  # Persiste os dados do MySQL
+
+  mindsdb:
+    image: mindsdb/mindsdb:latest
+    container_name: mindsdb_container
+    restart: always
+    environment:
+      MINDSDB_APIS: http,mysql  # Habilita APIs HTTP e MySQL
+    ports:
+      - "47334:47334"  # Porta HTTP para o editor web
+      - "47335:47335"  # Porta MySQL para conectar via cliente MySQL
+    volumes:
+      - mindsdb_data:/root/mdb_storage  # Persiste modelos e configs do MindsDB
+    depends_on:
+      - mysql  # Inicia o MySQL primeiro
+
+volumes:
+  mysql_data:
+  mindsdb_data:
